@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interaktif 20 Soal: Mean, Median, & Modus | SMP Kelas 8</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans leading-relaxed selection:bg-brand-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md">
+                        <i class="fa-solid fa-list-check text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-slate-900 leading-tight">Quiz 20 Soal Statistika</h1>
+                        <p class="text-xs text-slate-500 font-medium">Mean, Median, & Modus • Matematika SMP Kelas 8</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden sm:block">
+                        <span class="text-xs text-slate-500 font-semibold block">Progres Soal</span>
+                        <span class="text-xs font-bold text-brand-600" id="progress-text">0 / 20 Terjawab</span>
+                    </div>
+                    <div class="bg-brand-50 text-brand-700 font-bold text-sm px-3.5 py-1.5 rounded-xl border border-brand-200 shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-trophy text-amber-500"></i>
+                        <span>Skor: <span id="total-score">0</span> / 100</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Banner Selamat Datang -->
+        <section class="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white rounded-3xl p-6 sm:p-8 shadow-lg relative overflow-hidden">
+            <div class="relative z-10 max-w-3xl space-y-3">
+                <span class="inline-block bg-white/20 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Uji Pemahaman Mandiri</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold">Quiz Isian 20 Soal Statistika Data Tunggal</h2>
+                <p class="text-sm text-blue-100">
+                    Selesaikan 20 tantangan berikut! Isikan nilai <strong>Mean</strong>, <strong>Median</strong>, dan <strong>Modus</strong> pada kolom yang tersedia. Kamu dapat mengecek jawabanmu langsung per nomor atau melihat pembahasan lengkapnya.
+                </p>
+                <div class="pt-2 flex flex-wrap gap-2 text-xs font-semibold">
+                    <span class="bg-white/10 px-3 py-1.5 rounded-lg border border-white/20"><i class="fa-solid fa-check-double mr-1 text-emerald-400"></i> Toleransi Desimal (Koma/Titik)</span>
+                    <span class="bg-white/10 px-3 py-1.5 rounded-lg border border-white/20"><i class="fa-solid fa-lightbulb mr-1 text-amber-300"></i> Pembahasan Lengkap</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter Category Tabs -->
+        <div class="flex items-center justify-between flex-wrap gap-3 bg-white p-2.5 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex gap-2">
+                <button onclick="filterQuestions('all')" id="btn-filter-all" class="px-4 py-2 text-xs font-bold rounded-xl bg-brand-600 text-white shadow-sm transition-all">
+                    Semua Soal (20)
+                </button>
+                <button onclick="filterQuestions('baris')" id="btn-filter-baris" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
+                    Data Baris (Soal 1-10)
+                </button>
+                <button onclick="filterQuestions('tabel')" id="btn-filter-tabel" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all">
+                    Tabel Frekuensi (Soal 11-20)
+                </button>
+            </div>
+            <button onclick="checkAllAnswers()" class="px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white transition-all flex items-center gap-1.5 shadow">
+                <i class="fa-solid fa-square-check"></i> Periksa Semua Jawaban
+            </button>
+        </div>
+
+        <!-- CONTAINER UNTUK 20 SOAL -->
+        <div id="quiz-container" class="space-y-6">
+            <!-- Questions rendered by JS -->
+        </div>
+
+        <!-- Banner Rekap Akhir -->
+        <div id="final-summary" class="hidden bg-white border-2 border-brand-500 rounded-3xl p-8 text-center space-y-4 shadow-xl">
+            <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-3xl mx-auto">
+                🏆
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900">Quiz Selesai!</h3>
+            <p class="text-slate-600 text-sm">
+                Kamu telah menyelesaikan seluruh rangkaian 20 soal quiz statistika.
+            </p>
+            <div class="inline-block bg-brand-50 border border-brand-200 rounded-2xl px-6 py-4">
+                <span class="text-xs text-brand-700 uppercase font-bold block mb-1">Skor Akhir Kamu</span>
+                <span class="text-4xl font-extrabold text-brand-600" id="final-score-val">0</span>
+                <span class="text-sm font-bold text-slate-500"> / 100</span>
+            </div>
+            <div>
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-6 py-2.5 bg-brand-600 text-white font-bold text-xs rounded-xl hover:bg-brand-700 transition-all">
+                    Kembali ke Atas
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-8 mt-16 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="font-semibold text-slate-700 mb-1">Bank Soal Interaktif Statistika Kelas 8 SMP</p>
+            <p>20 Soal Isian Mandiri (Mean, Median, & Modus) • Didesain untuk Penguatan Konsep Dasar</p>
+        </div>
+    </footer>
+
+    <script>
+        // DATA 20 SOAL STATISTIKA SMP KELAS 8
+        const questionsData = [
+            // PART 1: DATA BARIS (SOAL 1 - 10)
+            {
+                id: 1,
+                type: 'baris',
+                category: 'Soal 1 • Data Baris',
+                title: 'Nilai Ulangan Matematika Rian',
+                dataText: '6, 7, 8, 8, 9, 7, 8, 9, 6',
+                desc: 'Berikut adalah daftar 9 kali nilai kuis Matematika Rian selama satu semester:',
+                ans: { mean: 7.56, median: 8, modus: 8 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 6, 6, 7, 7, 8, 8, 8, 9, 9 (Total n = 9 data ganjil).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 6+6+7+7+8+8+8+9+9 = 68. Maka Mean = 68 ÷ 9 = <strong>7,56</strong> (dibulatkan).<br/>
+                    3. <strong>Median (Me):</strong> Data ke-5 (nilai tengah) adalah <strong>8</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Angka yang paling sering muncul adalah <strong>8</strong> (muncul 3 kali).
+                `
+            },
+            {
+                id: 2,
+                type: 'baris',
+                category: 'Soal 2 • Data Baris',
+                title: 'Tinggi Badan Pemain Voli (cm)',
+                dataText: '155, 160, 158, 162, 160, 165',
+                desc: 'Data tinggi badan (dalam cm) 6 orang pemain tim bola voli SMP:',
+                ans: { mean: 160, median: 160, modus: 160 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 155, 158, 160, 160, 162, 165 (Total n = 6 data genap).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 155+158+160+160+162+165 = 960. Maka Mean = 960 ÷ 6 = <strong>160 cm</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Rata-rata data ke-3 & ke-4: (160 + 160) ÷ 2 = <strong>160 cm</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Tinggi badan yang muncul terbanyak adalah <strong>160 cm</strong> (muncul 2 kali).
+                `
+            },
+            {
+                id: 3,
+                type: 'baris',
+                category: 'Soal 3 • Data Baris',
+                title: 'Nilai Tugas Kelompok IPA',
+                dataText: '70, 80, 75, 90, 85, 80, 95',
+                desc: 'Berikut nilai tugas proyek IPA dari 7 kelompok siswa kelas 8:',
+                ans: { mean: 82.14, median: 80, modus: 80 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 70, 75, 80, 80, 85, 90, 95 (n = 7 data ganjil).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 575. Maka Mean = 575 ÷ 7 = <strong>82,14</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data tengah ke-4 adalah <strong>80</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Nilai yang sering muncul adalah <strong>80</strong> (muncul 2 kali).
+                `
+            },
+            {
+                id: 4,
+                type: 'baris',
+                category: 'Soal 4 • Data Baris',
+                title: 'Uang Saku Harian (dalam Ribuan Rp)',
+                dataText: '10, 12, 15, 10, 20, 15, 10, 18',
+                desc: 'Catatan uang saku harian 8 siswa (dalam ribuan Rupiah, misal 10 artinya Rp10.000):',
+                ans: { mean: 13.75, median: 13.5, modus: 10 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 10, 10, 10, 12, 15, 15, 18, 20 (n = 8 data genap).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 110. Maka Mean = 110 ÷ 8 = <strong>13,75</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data ke-4 (12) & ke-5 (15) → (12 + 15) ÷ 2 = <strong>13,5</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Nilai yang paling sering muncul adalah <strong>10</strong> (muncul 3 kali).
+                `
+            },
+            {
+                id: 5,
+                type: 'baris',
+                category: 'Soal 5 • Data Baris',
+                title: 'Suhu Udara Siang Hari (°C)',
+                dataText: '28, 30, 29, 31, 30, 32, 30',
+                desc: 'Catatan suhu udara rata-rata kota selama 7 hari berturut-turut (°C):',
+                ans: { mean: 30, median: 30, modus: 30 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 28, 29, 30, 30, 30, 31, 32 (n = 7).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 210 ÷ 7 = <strong>30°C</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data ke-4 adalah <strong>30°C</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Suhu paling sering dicatat adalah <strong>30°C</strong> (muncul 3 kali).
+                `
+            },
+            {
+                id: 6,
+                type: 'baris',
+                category: 'Soal 6 • Data Baris',
+                title: 'Jumlah Buku yang Dibaca Per Bulan',
+                dataText: '3, 5, 2, 4, 3, 6, 3, 5, 4, 5',
+                desc: 'Data jumlah buku bacaan yang diselesaikan oleh 10 anggota klub literasi:',
+                ans: { mean: 4, median: 4, modus: 3 }, // Bimodal: 3 dan 5 (bisa diisi 3 atau 5)
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 2, 3, 3, 3, 4, 4, 5, 5, 5, 6 (n = 10 data genap).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 40 ÷ 10 = <strong>4 buku</strong>.<br/>
+                    3. <strong>Median (Me):</strong> (Data ke-5 + Data ke-6) ÷ 2 = (4 + 4) ÷ 2 = <strong>4 buku</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Angka 3 dan 5 sama-sama muncul 3 kali (Bimodal).
+                `
+            },
+            {
+                id: 7,
+                type: 'baris',
+                category: 'Soal 7 • Data Baris',
+                title: 'Waktu Tempuh Lari 100 Metres (detik)',
+                dataText: '12, 15, 11, 14, 15, 13, 16',
+                desc: 'Catatan waktu tempuh lari cepat 7 siswa kelas 8 saat tes jasmani (detik):',
+                ans: { mean: 13.71, median: 14, modus: 15 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 11, 12, 13, 14, 15, 15, 16 (n = 7).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 96 ÷ 7 = <strong>13,71 detik</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data ke-4 = <strong>14 detik</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Waktu yang paling sering dicapai = <strong>15 detik</strong>.
+                `
+            },
+            {
+                id: 8,
+                type: 'baris',
+                category: 'Soal 8 • Data Baris',
+                title: 'Skor Game Online eSports',
+                dataText: '85, 90, 88, 92, 85, 95, 90, 85',
+                desc: 'Perolehan skor dalam 8 pertandingan berturut-turut seorang pemain eSports SMP:',
+                ans: { mean: 88.75, median: 89, modus: 85 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 85, 85, 85, 88, 90, 90, 92, 95 (n = 8 data genap).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 710 ÷ 8 = <strong>88,75</strong>.<br/>
+                    3. <strong>Median (Me):</strong> (Data ke-4 + Data ke-5) ÷ 2 = (88 + 90) ÷ 2 = <strong>89</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Skor paling sering muncul = <strong>85</strong> (muncul 3 kali).
+                `
+            },
+            {
+                id: 9,
+                type: 'baris',
+                category: 'Soal 9 • Data Baris',
+                title: 'Nilai Kuis Bahasa Inggris',
+                dataText: '7, 9, 8, 6, 10, 8, 7, 9, 8',
+                desc: 'Hasil kuis kosa kata Bahasa Inggris dari 9 siswa:',
+                ans: { mean: 8, median: 8, modus: 8 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 6, 7, 7, 8, 8, 8, 9, 9, 10 (n = 9).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 72 ÷ 9 = <strong>8</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data ke-5 = <strong>8</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Nilai terbanyak = <strong>8</strong> (muncul 3 kali).
+                `
+            },
+            {
+                id: 10,
+                type: 'baris',
+                category: 'Soal 10 • Data Baris',
+                title: 'Berat Badan Siswa (kg)',
+                dataText: '42, 45, 40, 48, 45, 44, 46, 45',
+                desc: 'Data berat badan 8 siswa kelas 8B yang diukur saat pemeriksaan kesehatan (kg):',
+                ans: { mean: 44.38, median: 45, modus: 45 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Urutkan Data:</strong> 40, 42, 44, 45, 45, 45, 46, 48 (n = 8).<br/>
+                    2. <strong>Mean (x̄):</strong> Total = 355 ÷ 8 = <strong>44,38 kg</strong>.<br/>
+                    3. <strong>Median (Me):</strong> (45 + 45) ÷ 2 = <strong>45 kg</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Berat badan terbanyak = <strong>45 kg</strong> (muncul 3 kali).
+                `
+            },
+
+            // PART 2: DATA TABEL FREKUENSI (SOAL 11 - 20)
+            {
+                id: 11,
+                type: 'tabel',
+                category: 'Soal 11 • Tabel Frekuensi',
+                title: 'Tabel Nilai Ulangan Matematika',
+                tableData: [
+                    { x: 6, f: 4 },
+                    { x: 7, f: 6 },
+                    { x: 8, f: 8 },
+                    { x: 9, f: 2 }
+                ],
+                desc: 'Data distribusi nilai Matematika 20 siswa disajikan pada tabel berikut:',
+                ans: { mean: 7.4, median: 7.5, modus: 8 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Jumlahkan Perkalian (x × f):</strong> (6×4) + (7×6) + (8×8) + (9×2) = 24 + 42 + 64 + 18 = 148.<br/>
+                    2. <strong>Total Frekuensi (∑f):</strong> 4 + 6 + 8 + 2 = 20.<br/>
+                    3. <strong>Mean (x̄):</strong> 148 ÷ 20 = <strong>7,4</strong>.<br/>
+                    4. <strong>Median (Me):</strong> N = 20 (genap). Rata-rata data ke-10 (nilai 7) & ke-11 (nilai 8) = (7 + 8) ÷ 2 = <strong>7,5</strong>.<br/>
+                    5. <strong>Modus (Mo):</strong> Frekuensi terbesar adalah 8 (pada nilai <strong>8</strong>).
+                `
+            },
+            {
+                id: 12,
+                type: 'tabel',
+                category: 'Soal 12 • Tabel Frekuensi',
+                title: 'Tabel Ukuran Sepatu Siswa',
+                tableData: [
+                    { x: 37, f: 3 },
+                    { x: 38, f: 5 },
+                    { x: 39, f: 7 },
+                    { x: 40, f: 4 },
+                    { x: 41, f: 1 }
+                ],
+                desc: 'Data ukuran sepatu dari 20 siswa kelas 8C:',
+                ans: { mean: 38.75, median: 39, modus: 39 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Perkalian (x × f):</strong> (37×3) + (38×5) + (39×7) + (40×4) + (41×1) = 111 + 190 + 273 + 160 + 41 = 775.<br/>
+                    2. <strong>Total Frekuensi (∑f):</strong> 20.<br/>
+                    3. <strong>Mean (x̄):</strong> 775 ÷ 20 = <strong>38,75</strong>.<br/>
+                    4. <strong>Median (Me):</strong> Data ke-10 dan ke-11 berada di ukuran <strong>39</strong>.<br/>
+                    5. <strong>Modus (Mo):</strong> Ukuran sepatu paling banyak dipunyai (f=7) adalah <strong>39</strong>.
+                `
+            },
+            {
+                id: 13,
+                type: 'tabel',
+                category: 'Soal 13 • Tabel Frekuensi',
+                title: 'Tabel Jumlah Saudara Kandung',
+                tableData: [
+                    { x: 1, f: 5 },
+                    { x: 2, f: 10 },
+                    { x: 3, f: 3 },
+                    { x: 4, f: 2 }
+                ],
+                desc: 'Survei jumlah saudara kandung dari 20 orang siswa:',
+                ans: { mean: 2.1, median: 2, modus: 2 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Perkalian (x × f):</strong> (1×5) + (2×10) + (3×3) + (4×2) = 5 + 20 + 9 + 8 = 42.<br/>
+                    2. <strong>Total Frekuensi (∑f):</strong> 20.<br/>
+                    3. <strong>Mean (x̄):</strong> 42 ÷ 20 = <strong>2,1</strong>.<br/>
+                    4. <strong>Median (Me):</strong> Data ke-10 dan ke-11 ada di angka <strong>2</strong>.<br/>
+                    5. <strong>Modus (Mo):</strong> Frekuensi terbanyak adalah 10 (pada jumlah <strong>2</strong> saudara).
+                `
+            },
+            {
+                id: 14,
+                type: 'tabel',
+                category: 'Soal 14 • Tabel Frekuensi',
+                title: 'Tabel Usia Anggota Ekstrakurikuler Pramuka',
+                tableData: [
+                    { x: 12, f: 2 },
+                    { x: 13, f: 8 },
+                    { x: 14, f: 6 },
+                    { x: 15, f: 4 }
+                ],
+                desc: 'Daftar usia (dalam tahun) dari 20 anggota Pramuka:',
+                ans: { mean: 13.6, median: 13.5, modus: 13 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Perkalian (x × f):</strong> (12×2) + (13×8) + (14×6) + (15×4) = 24 + 104 + 84 + 60 = 272.<br/>
+                    2. <strong>Mean (x̄):</strong> 272 ÷ 20 = <strong>13,6 tahun</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data ke-10 (13) & ke-11 (14) → (13 + 14) ÷ 2 = <strong>13,5 tahun</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Usia terbanyak (f=8) adalah <strong>13 tahun</strong>.
+                `
+            },
+            {
+                id: 15,
+                type: 'tabel',
+                category: 'Soal 15 • Tabel Frekuensi',
+                title: 'Tabel Skor Lempar Lembing (meter)',
+                tableData: [
+                    { x: 15, f: 2 },
+                    { x: 16, f: 4 },
+                    { x: 17, f: 5 },
+                    { x: 18, f: 3 },
+                    { x: 19, f: 1 }
+                ],
+                desc: 'Hasil capaian jarak lempar lembing dari 15 siswa (meter):',
+                ans: { mean: 16.8, median: 17, modus: 17 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Perkalian (x × f):</strong> (15×2) + (16×4) + (17×5) + (18×3) + (19×1) = 30 + 64 + 85 + 54 + 19 = 252.<br/>
+                    2. <strong>Total Frekuensi (∑f):</strong> 15.<br/>
+                    3. <strong>Mean (x̄):</strong> 252 ÷ 15 = <strong>16,8 meter</strong>.<br/>
+                    4. <strong>Median (Me):</strong> N = 15 (ganjil). Data tengah ke-8 adalah <strong>17 meter</strong>.<br/>
+                    5. <strong>Modus (Mo):</strong> Frekuensi terbesar (f=5) ada pada jarak <strong>17 meter</strong>.
+                `
+            },
+            {
+                id: 16,
+                type: 'tabel',
+                category: 'Soal 16 • Tabel Frekuensi',
+                title: 'Tabel Nilai Praktikum IPA',
+                tableData: [
+                    { x: 70, f: 2 },
+                    { x: 75, f: 5 },
+                    { x: 80, f: 8 },
+                    { x: 85, f: 3 },
+                    { x: 90, f: 2 }
+                ],
+                desc: 'Hasil rekapitulasi nilai praktikum laboratorium IPA 20 siswa:',
+                ans: { mean: 79.5, median: 80, modus: 80 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Perkalian (x × f):</strong> (70×2) + (75×5) + (80×8) + (85×3) + (90×2) = 140 + 375 + 640 + 255 + 180 = 1590.<br/>
+                    2. <strong>Mean (x̄):</strong> 1590 ÷ 20 = <strong>79,5</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data ke-10 dan ke-11 berada di nilai <strong>80</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Nilai terbanyak (f=8) adalah <strong>80</strong>.
+                `
+            },
+            {
+                id: 17,
+                type: 'tabel',
+                category: 'Soal 17 • Tabel Frekuensi',
+                title: 'Tabel Jam Belajar Mandiri Di Rumah',
+                tableData: [
+                    { x: 1, f: 3 },
+                    { x: 2, f: 7 },
+                    { x: 3, f: 6 },
+                    { x: 4, f: 3 },
+                    { x: 5, f: 1 }
+                ],
+                desc: 'Laporan durasi belajar mandiri harian (jam) dari 20 siswa:',
+                ans: { mean: 2.6, median: 2.5, modus: 2 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Perkalian (x × f):</strong> (1×3) + (2×7) + (3×6) + (4×3) + (5×1) = 3 + 14 + 18 + 12 + 5 = 52.<br/>
+                    2. <strong>Mean (x̄):</strong> 52 ÷ 20 = <strong>2,6 jam</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data ke-10 (2) & ke-11 (3) → (2 + 3) ÷ 2 = <strong>2,5 jam</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Durasi paling umum (f=7) adalah <strong>2 jam</strong>.
+                `
+            },
+            {
+                id: 18,
+                type: 'tabel',
+                category: 'Soal 18 • Tabel Frekuensi',
+                title: 'Tabel Skor Kuis Interaktif Kahoot',
+                tableData: [
+                    { x: 60, f: 1 },
+                    { x: 70, f: 3 },
+                    { x: 80, f: 6 },
+                    { x: 90, f: 7 },
+                    { x: 100, f: 3 }
+                ],
+                desc: 'Perolehan skor kuis Kahoot Matematika 20 siswa:',
+                ans: { mean: 84, median: 85, modus: 90 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Perkalian (x × f):</strong> (60×1) + (70×3) + (80×6) + (90×7) + (100×3) = 60 + 210 + 480 + 630 + 300 = 1680.<br/>
+                    2. <strong>Mean (x̄):</strong> 1680 ÷ 20 = <strong>84</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data ke-10 (80) & ke-11 (90) → (80 + 90) ÷ 2 = <strong>85</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Skor terbanyak (f=7) adalah <strong>90</strong>.
+                `
+            },
+            {
+                id: 19,
+                type: 'tabel',
+                category: 'Soal 19 • Tabel Frekuensi',
+                title: 'Tabel Pengeluaran Jajan Per Hari (Ribuan Rp)',
+                tableData: [
+                    { x: 5, f: 4 },
+                    { x: 10, f: 9 },
+                    { x: 15, f: 5 },
+                    { x: 20, f: 2 }
+                ],
+                desc: 'Uang jajan harian 20 siswa (dalam ribuan Rupiah, misal 5 = Rp5.000):',
+                ans: { mean: 11.25, median: 10, modus: 10 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Perkalian (x × f):</strong> (5×4) + (10×9) + (15×5) + (20×2) = 20 + 90 + 75 + 40 = 225.<br/>
+                    2. <strong>Mean (x̄):</strong> 225 ÷ 20 = <strong>11,25</strong> (artinya Rp11.250).<br/>
+                    3. <strong>Median (Me):</strong> Data ke-10 dan ke-11 ada di nominal <strong>10</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Nominal paling umum (f=9) adalah <strong>10</strong> (Rp10.000).
+                `
+            },
+            {
+                id: 20,
+                type: 'tabel',
+                category: 'Soal 20 • Tabel Frekuensi',
+                title: 'Tabel Nilai Tryout AKM Matematika',
+                tableData: [
+                    { x: 65, f: 3 },
+                    { x: 75, f: 7 },
+                    { x: 85, f: 8 },
+                    { x: 95, f: 2 }
+                ],
+                desc: 'Hasil Tryout AKM Matematika 20 siswa SMP:',
+                ans: { mean: 79.5, median: 80, modus: 85 },
+                explanation: `
+                    <strong>Langkah Penyelesaian:</strong><br/>
+                    1. <strong>Perkalian (x × f):</strong> (65×3) + (75×7) + (85×8) + (95×2) = 195 + 525 + 680 + 190 = 1590.<br/>
+                    2. <strong>Mean (x̄):</strong> 1590 ÷ 20 = <strong>79,5</strong>.<br/>
+                    3. <strong>Median (Me):</strong> Data ke-10 (75) & ke-11 (85) → (75 + 85) ÷ 2 = <strong>80</strong>.<br/>
+                    4. <strong>Modus (Mo):</strong> Nilai terbanyak (f=8) adalah <strong>85</strong>.
+                `
+            }
+        ];
+
+        // State variables
+        let solvedStatus = {};
+        let currentFilter = 'all';
+
+        // Render Questions on load
+        window.onload = function() {
+            renderQuestions();
+        };
+
+        function renderQuestions() {
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            questionsData.forEach(q => {
+                const card = document.createElement('div');
+                card.id = `q-card-${q.id}`;
+                card.className = `p-6 rounded-3xl border border-slate-200 bg-white shadow-sm space-y-4 transition-all duration-200 ${
+                    currentFilter !== 'all' && q.type !== currentFilter ? 'hidden' : 'block'
+                }`;
+
+                let dataContentHtml = '';
+                if (q.type === 'baris') {
+                    dataContentHtml = `
+                        <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-center font-mono text-base font-bold text-brand-700 tracking-wide">
+                            ${q.dataText}
+                        </div>
+                    `;
+                } else {
+                    let rowsHtml = q.tableData.map(row => `
+                        <tr>
+                            <td class="p-2 border-r border-slate-200 font-bold text-slate-800">${row.x}</td>
+                            <td class="p-2 text-slate-700">${row.f}</td>
+                        </tr>
+                    `).join('');
+
+                    dataContentHtml = `
+                        <div class="max-w-xs overflow-x-auto my-2">
+                            <table class="w-full text-xs text-center border-collapse bg-slate-50 rounded-xl overflow-hidden border border-slate-200">
+                                <thead>
+                                    <tr class="bg-slate-200 text-slate-800 font-bold">
+                                        <th class="p-2 border-r border-slate-300">Nilai / Ukuran (x)</th>
+                                        <th class="p-2">Frekuensi (f)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 font-mono">
+                                    ${rowsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <span class="text-xs font-bold px-3 py-1 rounded-full ${q.type === 'baris' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}">
+                            ${q.category}
+                        </span>
+                        <span class="text-xs text-slate-400 font-semibold">+5 Poin</span>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-slate-900 text-base mb-1">${q.title}</h3>
+                        <p class="text-xs text-slate-600 mb-3">${q.desc}</p>
+                        ${dataContentHtml}
+                    </div>
+
+                    <!-- Input Fields Isian -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">A. Nilai Mean (x̄)</label>
+                            <input type="text" id="q${q.id}-mean" placeholder="Masukkan jawaban..." class="w-full p-2.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:outline-none font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">B. Nilai Median (Me)</label>
+                            <input type="text" id="q${q.id}-median" placeholder="Masukkan jawaban..." class="w-full p-2.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:outline-none font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">C. Nilai Modus (Mo)</label>
+                            <input type="text" id="q${q.id}-modus" placeholder="Masukkan jawaban..." class="w-full p-2.5 text-xs rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:outline-none font-mono">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center gap-2 pt-2">
+                        <button onclick="checkAnswer(${q.id})" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm">
+                            Periksa Soal Ini
+                        </button>
+                        <button onclick="toggleExplanation(${q.id})" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
+                            <i class="fa-regular fa-lightbulb text-amber-500"></i> Pembahasan
+                        </button>
+                    </div>
+
+                    <!-- Feedback Box -->
+                    <div id="fb-${q.id}" class="hidden p-3.5 rounded-2xl text-xs space-y-1"></div>
+
+                    <!-- Explanation Box -->
+                    <div id="exp-${q.id}" class="hidden p-4 bg-amber-50/80 border border-amber-200 rounded-2xl text-xs text-amber-900 leading-relaxed">
+                        ${q.explanation}
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function filterQuestions(type) {
+            currentFilter = type;
+            document.getElementById('btn-filter-all').className = `px-4 py-2 text-xs font-bold rounded-xl transition-all ${type === 'all' ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`;
+            document.getElementById('btn-filter-baris').className = `px-4 py-2 text-xs font-bold rounded-xl transition-all ${type === 'baris' ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`;
+            document.getElementById('btn-filter-tabel').className = `px-4 py-2 text-xs font-bold rounded-xl transition-all ${type === 'tabel' ? 'bg-brand-600 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`;
+
+            questionsData.forEach(q => {
+                const card = document.getElementById(`q-card-${q.id}`);
+                if (type === 'all' || q.type === type) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        function parseInputValue(id) {
+            const valStr = document.getElementById(id).value.trim().replace(',', '.');
+            return parseFloat(valStr);
+        }
+
+        function checkAnswer(qId) {
+            const q = questionsData.find(item => item.id === qId);
+            const userMean = parseInputValue(`q${qId}-mean`);
+            const userMed = parseInputValue(`q${qId}-median`);
+            const userMod = parseInputValue(`q${qId}-modus`);
+
+            const fb = document.getElementById(`fb-${qId}`);
+            fb.classList.remove('hidden');
+
+            const isMeanOk = !isNaN(userMean) && Math.abs(userMean - q.ans.mean) <= 0.1;
+            const isMedOk = !isNaN(userMed) && Math.abs(userMed - q.ans.median) <= 0.1;
+            const isModOk = !isNaN(userMod) && Math.abs(userMod - q.ans.modus) <= 0.1;
+
+            if (isMeanOk && isMedOk && isModOk) {
+                fb.className = "p-3.5 rounded-2xl text-xs bg-emerald-50 text-emerald-900 border border-emerald-200 font-semibold";
+                fb.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 mr-1.5"></i> Jawabanmu 100% Tepat! (Mean = ${q.ans.mean}, Median = ${q.ans.median}, Modus = ${q.ans.modus})`;
+                
+                if (!solvedStatus[qId]) {
+                    solvedStatus[qId] = true;
+                    updateScore();
+                }
+            } else {
+                fb.className = "p-3.5 rounded-2xl text-xs bg-rose-50 text-rose-900 border border-rose-200 font-semibold";
+                fb.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 mr-1.5"></i> Masih ada isian yang kurang tepat:
+                    ${!isMeanOk ? '<br/>• Cek kembali perhitungan Mean.' : ''}
+                    ${!isMedOk ? '<br/>• Cek kembali posisi Median.' : ''}
+                    ${!isModOk ? '<br/>• Cek nilai Modus (frekuensi terbanyak).' : ''}
+                `;
+            }
+        }
+
+        function checkAllAnswers() {
+            questionsData.forEach(q => checkAnswer(q.id));
+            
+            const totalSolved = Object.keys(solvedStatus).length;
+            if (totalSolved === 20) {
+                document.getElementById('final-summary').classList.remove('hidden');
+                document.getElementById('final-score-val').innerText = totalSolved * 5;
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function toggleExplanation(qId) {
+            const exp = document.getElementById(`exp-${qId}`);
+            exp.classList.toggle('hidden');
+        }
+
+        function updateScore() {
+            const solvedCount = Object.keys(solvedStatus).length;
+            const currentScore = solvedCount * 5; // 20 questions * 5 = 100
+
+            document.getElementById('total-score').innerText = currentScore;
+            document.getElementById('progress-text').innerText = `${solvedCount} / 20 Terjawab`;
+
+            confetti({
+                particleCount: 40,
+                spread: 50,
+                origin: { y: 0.8 }
+            });
+        }
+    </script>
+</body>
+</html>
